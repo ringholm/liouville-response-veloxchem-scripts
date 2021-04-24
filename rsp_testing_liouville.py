@@ -21,7 +21,6 @@ def dlt(i, j):
 		return False
 
 # AO to MO basis transformation
-
 def ao2mo(mo, A):
 	return np.linalg.multi_dot([mo.T, A, mo])
 
@@ -104,18 +103,7 @@ RHS_0 = RHS[0]
 RHS_1 = RHS[1]
 RHS_2 = RHS[2]
 
-
-# "Pristine" run to get reference undamped response data
-lr_solver_ref = vlx.LinearResponseSolver(comm, ostream)
-lr_solver_ref.update_settings(
-{
-'frequencies': ','.join(ref_freqs_str),
-}, method_settings)
-ref_dict = lr_solver_ref.compute(molecule, basis,
-                               scfdrv.scf_tensors)
-
 # Reference damped response data
-
 damp_param = 0.005
 
 cpp_solver_ref = vlx.ComplexResponse(comm, ostream)
@@ -440,10 +428,8 @@ rsp = -1.0* np.dot(RHS_0, X)
 
 
 print('My response function component:', rsp)
-print('Reference (undamped): ', ref_dict['response_functions'][('x', 'x', ref_freqs[0])])
-print('Reference (damped): ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])])
-print('Difference (from undamped): ', ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
-print('Difference (from damped): ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
+print('Reference: ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])])
+print('Difference: ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
 
 
 # Liouville section begins
@@ -534,8 +520,7 @@ print('L-space params', X)
 rsp = 1.0j*np.dot(M, X)
 
 print('Response:', rsp)
-print('Difference from undamped: ', ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
-print('Difference from damped: ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
+print('Difference from refefence: ', cpp_ref_dict['response_functions'][('x', 'x', ref_freqs[0])] - rsp)
 
 K_1 = copy.deepcopy(X)
 
